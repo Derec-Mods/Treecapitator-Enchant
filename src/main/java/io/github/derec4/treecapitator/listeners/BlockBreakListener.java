@@ -8,13 +8,16 @@ import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockBreakListener implements Listener {
 
@@ -110,7 +114,10 @@ public class BlockBreakListener implements Listener {
                         }
                         target.setType(Material.AIR);
                     } else {
-                        target.breakNaturally(item, true, TreecapitatorConfig.showAnimation);
+                        if (TreecapitatorConfig.showAnimation) {
+                            target.getWorld().playEffect(target.getLocation(), Effect.STEP_SOUND, target.getType());
+                        }
+                        target.breakNaturally(item);
                     }
                     successfulBreaks++;
                 }
@@ -127,11 +134,26 @@ public class BlockBreakListener implements Listener {
         }
 
         if (TreecapitatorConfig.consumeDurability && successfulBreaks > 0) {
-            for (int i = 0; i < successfulBreaks; i++) {
-                if (item.getType().isAir()) {
-                    break;
+            if (item.getItemMeta() instanceof Damageable damageable) {
+                int maxDurability = item.getType().getMaxDurability();
+                int unbreaking = item.getEnchantmentLevel(Enchantment.UNBREAKING);
+                int currentDamage = damageable.getDamage();
+                for (int i = 0; i < successfulBreaks; i++) {
+                    if (unbreaking > 0 && ThreadLocalRandom.current().nextInt(unbreaking + 1) != 0) {
+                        continue;
+                    }
+                    currentDamage++;
+                    if (currentDamage >= maxDurability) {
+                        break;
+                    }
                 }
-                player.damageItemStack(item, 1);
+                if (currentDamage >= maxDurability) {
+                    player.getInventory().setItemInMainHand(null);
+                    player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
+                } else {
+                    damageable.setDamage(currentDamage);
+                    item.setItemMeta(damageable);
+                }
             }
         }
     }
