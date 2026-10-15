@@ -1,5 +1,6 @@
 package io.github.derec4.treecapitator.listeners;
 
+import io.github.derec4.treecapitator.compatibility.VeinminerCompatibility;
 import io.github.derec4.treecapitator.config.TreecapitatorConfig;
 import io.github.derec4.treecapitator.engine.TreeFeller;
 import io.github.derec4.treecapitator.utils.TreeUtils;
@@ -49,6 +50,10 @@ public class BlockBreakListener implements Listener {
             return;
         }
 
+        if (!TreeUtils.isLog(origin.getType(), TreecapitatorConfig.includeGiantMushrooms)) {
+            return;
+        }
+
         Player player = event.getPlayer();
         if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE) {
             return;
@@ -67,6 +72,8 @@ public class BlockBreakListener implements Listener {
             return;
         }
 
+        VeinminerCompatibility.checkAndAddLogging(item);
+
         if (TreecapitatorConfig.requireEnchantment) {
             NamespacedKey key = new NamespacedKey("treecapitator", "logging");
             Enchantment loggingEnchant = Registry.ENCHANTMENT.get(key);
@@ -82,10 +89,6 @@ public class BlockBreakListener implements Listener {
                 return;
             }
             cooldowns.put(player.getUniqueId(), now);
-        }
-
-        if (!TreeUtils.isLog(origin.getType(), TreecapitatorConfig.includeGiantMushrooms)) {
-            return;
         }
 
         List<Block> logs = TreeFeller.findTreeLogs(origin);

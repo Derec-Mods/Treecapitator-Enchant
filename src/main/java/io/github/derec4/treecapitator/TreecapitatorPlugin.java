@@ -1,6 +1,7 @@
 package io.github.derec4.treecapitator;
 
 import io.github.derec4.treecapitator.commands.TreecapitatorCommand;
+import io.github.derec4.treecapitator.compatibility.VeinminerCompatibility;
 import io.github.derec4.treecapitator.config.TreecapitatorConfig;
 import io.github.derec4.treecapitator.listeners.BlockBreakListener;
 import net.kyori.adventure.text.Component;
@@ -26,6 +27,7 @@ public class TreecapitatorPlugin extends JavaPlugin {
         TreecapitatorConfig.load(getConfig());
 
         getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
+        getServer().getPluginManager().registerEvents(new VeinminerCompatibility(), this);
 
         TreecapitatorCommand command = new TreecapitatorCommand();
         PluginCommand pluginCommand = getCommand("treecapitator");

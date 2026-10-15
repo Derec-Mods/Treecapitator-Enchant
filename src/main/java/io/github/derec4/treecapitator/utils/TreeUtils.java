@@ -7,37 +7,9 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Orientable;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.block.data.type.Leaves;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
 
 public class TreeUtils {
-
-    public static void checkAndAddLoggingEnchant(ItemStack item) {
-        if (item == null || !isAxe(item.getType())) {
-            return;
-        }
-
-        NamespacedKey loggingKey = new NamespacedKey("treecapitator", "logging");
-        Enchantment loggingEnchant = Registry.ENCHANTMENT.get(loggingKey);
-        if (loggingEnchant == null || item.containsEnchantment(loggingEnchant)) {
-            return;
-        }
-
-        boolean hasVeinmine = false;
-        for (Enchantment enchant : item.getEnchantments().keySet()) {
-            if (enchant.getKey().toString().toLowerCase().contains("veinmin")) {
-                hasVeinmine = true;
-                break;
-            }
-        }
-
-        if (hasVeinmine) {
-            item.addUnsafeEnchantment(loggingEnchant, 1);
-        }
-    }
 
     private static final BlockFace[] ORTHOGONAL_FACES = {
             BlockFace.UP,
