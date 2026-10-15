@@ -53,7 +53,7 @@ public class TreeFeller {
                         }
 
                         Block neighbor = current.getRelative(dx, dy, dz);
-                        if (visited.contains(neighbor)) {
+                        if (!visited.add(neighbor)) {
                             continue;
                         }
 
@@ -70,7 +70,6 @@ public class TreeFeller {
                             continue;
                         }
 
-                        visited.add(neighbor);
                         queue.add(neighbor);
                     }
                 }
