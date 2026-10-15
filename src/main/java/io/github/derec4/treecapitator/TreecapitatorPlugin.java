@@ -1,6 +1,7 @@
 package io.github.derec4.treecapitator;
 
 import io.github.derec4.treecapitator.config.TreecapitatorConfig;
+import io.github.derec4.treecapitator.listeners.BlockBreakListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -21,6 +22,8 @@ public class TreecapitatorPlugin extends JavaPlugin {
 
         saveDefaultConfig();
         TreecapitatorConfig.load(getConfig());
+
+        getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
 
         ConsoleCommandSender console = Bukkit.getConsoleSender();
         String version = getDescription().getVersion();
