@@ -44,7 +44,7 @@ public class TreeUtils {
         return base == target;
     }
 
-    public static boolean isSmartValid(Block block, boolean includeMushrooms) {
+    public static boolean isAntiGriefValid(Block block, boolean includeMushrooms) {
         Material material = block.getType();
         if (!isLog(material, includeMushrooms)) {
             return false;

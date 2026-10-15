@@ -8,14 +8,9 @@ import java.util.Set;
 
 public class TreecapitatorConfig {
 
-    public enum DetectionMode {
-        SMART,
-        BASIC
-    }
-
     public static boolean enabled = true;
     public static boolean requireEnchantment = false;
-    public static DetectionMode detectionMode = DetectionMode.SMART;
+    public static boolean antiGrief = true;
     public static int maxLogsPerChop = 500;
     public static boolean matchLogs = false;
     public static boolean includeGiantMushrooms = true;
@@ -29,14 +24,7 @@ public class TreecapitatorConfig {
     public static void load(FileConfiguration config) {
         enabled = config.getBoolean("enabled", true);
         requireEnchantment = config.getBoolean("require-enchantment", false);
-
-        String detectStr = config.getString("detection-mode", "SMART").toUpperCase();
-        try {
-            detectionMode = DetectionMode.valueOf(detectStr);
-        } catch (IllegalArgumentException e) {
-            detectionMode = DetectionMode.SMART;
-        }
-
+        antiGrief = config.getBoolean("anti-grief", true);
         maxLogsPerChop = config.getInt("max-logs-per-chop", 500);
         matchLogs = config.getBoolean("match-logs", false);
         includeGiantMushrooms = config.getBoolean("include-giant-mushrooms", true);
