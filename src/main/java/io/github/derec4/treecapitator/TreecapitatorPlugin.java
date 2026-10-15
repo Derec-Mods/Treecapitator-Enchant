@@ -7,17 +7,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class TreecapitatorPlugin extends JavaPlugin {
+public class TreecapitatorPlugin extends JavaPlugin {
 
     private static TreecapitatorPlugin instance;
-    private TreecapitatorConfig pluginConfig;
 
     public static TreecapitatorPlugin getInstance() {
         return instance;
-    }
-
-    public TreecapitatorConfig getPluginConfig() {
-        return pluginConfig;
     }
 
     @Override
@@ -25,8 +20,7 @@ public final class TreecapitatorPlugin extends JavaPlugin {
         instance = this;
 
         saveDefaultConfig();
-        pluginConfig = new TreecapitatorConfig();
-        pluginConfig.load(getConfig());
+        TreecapitatorConfig.load(getConfig());
 
         ConsoleCommandSender console = Bukkit.getConsoleSender();
         String version = getDescription().getVersion();
@@ -39,7 +33,7 @@ public final class TreecapitatorPlugin extends JavaPlugin {
 
     public void reloadPluginConfig() {
         reloadConfig();
-        pluginConfig.load(getConfig());
+        TreecapitatorConfig.load(getConfig());
     }
 
     @Override

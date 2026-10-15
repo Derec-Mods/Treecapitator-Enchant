@@ -8,7 +8,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Orientable;
 
-public final class TreeUtils {
+public class TreeUtils {
 
     private static final BlockFace[] ORTHOGONAL_FACES = {
             BlockFace.UP,
@@ -18,9 +18,6 @@ public final class TreeUtils {
             BlockFace.EAST,
             BlockFace.WEST
     };
-
-    private TreeUtils() {
-    }
 
     public static boolean isAxe(Material material) {
         if (material == null) {

@@ -13,82 +13,46 @@ public class TreecapitatorConfig {
         BASIC
     }
 
-    private boolean enabled = true;
-    private boolean requireEnchantment = false;
-    private DetectionMode detectionMode = DetectionMode.SMART;
-    private int maxLogsPerChop = 500;
-    private boolean strictSpeciesMatch = false;
-    private boolean includeGiantMushrooms = true;
-    private boolean showAnimation = true;
-    private boolean consumeDurability = true;
-    private long cooldownMs = 0;
-    private final Set<String> worldAllowlist = new HashSet<>();
-    private final Set<String> worldDenylist = new HashSet<>();
+    public static boolean enabled = true;
+    public static boolean requireEnchantment = false;
+    public static DetectionMode detectionMode = DetectionMode.SMART;
+    public static int maxLogsPerChop = 500;
+    public static boolean strictSpeciesMatch = false;
+    public static boolean includeGiantMushrooms = true;
+    public static boolean showAnimation = true;
+    public static boolean consumeDurability = true;
+    public static long cooldownMs = 0;
+    public static final Set<String> worldAllowlist = new HashSet<>();
+    public static final Set<String> worldDenylist = new HashSet<>();
 
-    public void load(FileConfiguration config) {
-        this.enabled = config.getBoolean("enabled", true);
-        this.requireEnchantment = config.getBoolean("require-enchantment", false);
+    public static void load(FileConfiguration config) {
+        enabled = config.getBoolean("enabled", true);
+        requireEnchantment = config.getBoolean("require-enchantment", false);
 
         String detectStr = config.getString("detection-mode", "SMART").toUpperCase();
         try {
-            this.detectionMode = DetectionMode.valueOf(detectStr);
+            detectionMode = DetectionMode.valueOf(detectStr);
         } catch (IllegalArgumentException e) {
-            this.detectionMode = DetectionMode.SMART;
+            detectionMode = DetectionMode.SMART;
         }
 
-        this.maxLogsPerChop = config.getInt("max-logs-per-chop", 500);
-        this.strictSpeciesMatch = config.getBoolean("strict-species-match", false);
-        this.includeGiantMushrooms = config.getBoolean("include-giant-mushrooms", true);
-        this.showAnimation = config.getBoolean("show-animation", true);
-        this.consumeDurability = config.getBoolean("consume-durability", true);
-        this.cooldownMs = config.getLong("cooldown-ms", 0);
+        maxLogsPerChop = config.getInt("max-logs-per-chop", 500);
+        strictSpeciesMatch = config.getBoolean("strict-species-match", false);
+        includeGiantMushrooms = config.getBoolean("include-giant-mushrooms", true);
+        showAnimation = config.getBoolean("show-animation", true);
+        consumeDurability = config.getBoolean("consume-durability", true);
+        cooldownMs = config.getLong("cooldown-ms", 0);
 
-        this.worldAllowlist.clear();
+        worldAllowlist.clear();
         List<String> allow = config.getStringList("world-allowlist");
-        this.worldAllowlist.addAll(allow);
+        worldAllowlist.addAll(allow);
 
-        this.worldDenylist.clear();
+        worldDenylist.clear();
         List<String> deny = config.getStringList("world-denylist");
-        this.worldDenylist.addAll(deny);
+        worldDenylist.addAll(deny);
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public boolean isRequireEnchantment() {
-        return requireEnchantment;
-    }
-
-    public DetectionMode getDetectionMode() {
-        return detectionMode;
-    }
-
-    public int getMaxLogsPerChop() {
-        return maxLogsPerChop;
-    }
-
-    public boolean isStrictSpeciesMatch() {
-        return strictSpeciesMatch;
-    }
-
-    public boolean isIncludeGiantMushrooms() {
-        return includeGiantMushrooms;
-    }
-
-    public boolean isShowAnimation() {
-        return showAnimation;
-    }
-
-    public boolean isConsumeDurability() {
-        return consumeDurability;
-    }
-
-    public long getCooldownMs() {
-        return cooldownMs;
-    }
-
-    public boolean isWorldAllowed(String worldName) {
+    public static boolean isWorldAllowed(String worldName) {
         if (!worldDenylist.isEmpty() && worldDenylist.contains(worldName)) {
             return false;
         }
