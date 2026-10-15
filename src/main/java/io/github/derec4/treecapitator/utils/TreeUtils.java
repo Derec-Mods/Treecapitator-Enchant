@@ -35,7 +35,7 @@ public class TreeUtils {
                 || material.name().endsWith("_WOOD") || material.name().endsWith("_HYPHAE")) {
             return true;
         }
-        return includeMushrooms && material == Material.MUSHROOM_STEM;
+        return includeMushrooms && material.name().equals("MUSHROOM_STEM");
     }
 
     public static boolean matchesLog(Material base, Material target, boolean matchLogs) {
@@ -56,28 +56,28 @@ public class TreeUtils {
                 return false;
             }
         } else {
-            Material leafType = leafBlock.getType();
-            if (log == Material.CRIMSON_STEM || log == Material.STRIPPED_CRIMSON_STEM || log == Material.CRIMSON_HYPHAE || log == Material.STRIPPED_CRIMSON_HYPHAE) {
-                return leafType == Material.NETHER_WART_BLOCK || leafType == Material.SHROOMLIGHT;
+            String leafName = leafBlock.getType().name();
+            String logName = log.name();
+            if (logName.contains("CRIMSON")) {
+                return leafName.equals("NETHER_WART_BLOCK") || leafName.equals("SHROOMLIGHT");
             }
-            if (log == Material.WARPED_STEM || log == Material.STRIPPED_WARPED_STEM || log == Material.WARPED_HYPHAE || log == Material.STRIPPED_WARPED_HYPHAE) {
-                return leafType == Material.WARPED_WART_BLOCK || leafType == Material.SHROOMLIGHT;
+            if (logName.contains("WARPED")) {
+                return leafName.equals("WARPED_WART_BLOCK") || leafName.equals("SHROOMLIGHT");
             }
-            if (log == Material.MUSHROOM_STEM) {
-                return leafType == Material.RED_MUSHROOM_BLOCK || leafType == Material.BROWN_MUSHROOM_BLOCK;
+            if (logName.equals("MUSHROOM_STEM")) {
+                return leafName.equals("RED_MUSHROOM_BLOCK") || leafName.equals("BROWN_MUSHROOM_BLOCK");
             }
             return false;
         }
 
-        Material leafType = leafBlock.getType();
         String logName = log.name().replace("STRIPPED_", "").replace("_LOG", "").replace("_WOOD", "");
-        String leafName = leafType.name().replace("_LEAVES", "");
+        String leafName = leafBlock.getType().name().replace("_LEAVES", "");
 
         if (logName.equals(leafName)) {
             return true;
         }
 
-        if (logName.equals("OAK") && (leafType == Material.AZALEA_LEAVES || leafType == Material.FLOWERING_AZALEA_LEAVES)) {
+        if (logName.equals("OAK") && leafName.contains("AZALEA")) {
             return true;
         }
 
@@ -111,8 +111,7 @@ public class TreeUtils {
             return true;
         }
 
-        if (material == Material.CHERRY_LOG || material == Material.STRIPPED_CHERRY_LOG
-                || material == Material.CHERRY_WOOD || material == Material.STRIPPED_CHERRY_WOOD) {
+        if (material.name().contains("CHERRY")) {
             int orthogonalLogs = 0;
             for (BlockFace face : ORTHOGONAL_FACES) {
                 if (isLog(block.getRelative(face).getType(), includeMushrooms)) {
@@ -124,7 +123,7 @@ public class TreeUtils {
             }
         }
 
-        if (material == Material.MUSHROOM_STEM) {
+        if (material.name().equals("MUSHROOM_STEM")) {
             return true;
         }
 
