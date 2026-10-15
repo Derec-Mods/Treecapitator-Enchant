@@ -9,10 +9,10 @@ import java.util.Set;
 public class TreecapitatorConfig {
 
     public static boolean enabled = true;
-    public static boolean requireEnchantment = false;
+    public static boolean requireEnchantment = true;
     public static boolean antiGrief = true;
-    public static int maxLogsPerChop = 500;
-    public static boolean matchLogs = false;
+    public static int maxLogsPerChop = 64;
+    public static boolean matchLogs = true;
     public static boolean includeGiantMushrooms = true;
     public static boolean showAnimation = true;
     public static boolean consumeDurability = true;
@@ -23,10 +23,10 @@ public class TreecapitatorConfig {
 
     public static void load(FileConfiguration config) {
         enabled = config.getBoolean("enabled", true);
-        requireEnchantment = config.getBoolean("require-enchantment", false);
+        requireEnchantment = config.getBoolean("require-enchantment", true);
         antiGrief = config.getBoolean("anti-grief", true);
-        maxLogsPerChop = config.getInt("max-logs-per-chop", 500);
-        matchLogs = config.getBoolean("match-logs", false);
+        maxLogsPerChop = config.getInt("max-logs-per-chop", 64);
+        matchLogs = config.getBoolean("match-logs", true);
         includeGiantMushrooms = config.getBoolean("include-giant-mushrooms", true);
         showAnimation = config.getBoolean("show-animation", true);
         consumeDurability = config.getBoolean("consume-durability", true);
