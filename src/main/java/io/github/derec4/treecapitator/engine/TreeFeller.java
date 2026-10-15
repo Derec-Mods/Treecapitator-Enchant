@@ -19,14 +19,14 @@ public class TreeFeller {
         Material originMaterial = origin.getType();
         boolean includeMushrooms = TreecapitatorConfig.includeGiantMushrooms;
         boolean matchLogs = TreecapitatorConfig.matchLogs;
-        boolean smart = TreecapitatorConfig.detectionMode == TreecapitatorConfig.DetectionMode.SMART;
+        boolean antiGrief = TreecapitatorConfig.antiGrief;
         int maxLogs = TreecapitatorConfig.maxLogsPerChop;
 
         if (!TreeUtils.isLog(originMaterial, includeMushrooms)) {
             return Collections.emptyList();
         }
 
-        if (smart && !TreeUtils.isSmartValid(origin, includeMushrooms)) {
+        if (antiGrief && !TreeUtils.isAntiGriefValid(origin, includeMushrooms)) {
             return Collections.emptyList();
         }
 
@@ -66,13 +66,26 @@ public class TreeFeller {
                             continue;
                         }
 
-                        if (smart && !TreeUtils.isSmartValid(neighbor, includeMushrooms)) {
+                        if (antiGrief && !TreeUtils.isAntiGriefValid(neighbor, includeMushrooms)) {
                             continue;
                         }
 
                         queue.add(neighbor);
                     }
                 }
+            }
+        }
+
+        if (antiGrief) {
+            boolean hasNaturalLeaves = false;
+            for (Block log : logs) {
+                if (TreeUtils.touchesMatchingLeaf(log)) {
+                    hasNaturalLeaves = true;
+                    break;
+                }
+            }
+            if (!hasNaturalLeaves) {
+                return Collections.emptyList();
             }
         }
 

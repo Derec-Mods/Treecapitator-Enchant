@@ -1,6 +1,6 @@
 enabled: true
 require-enchantment: false
-detection-mode: SMART
+anti-grief: true
 max-logs-per-chop: 500
 match-logs: false
 include-giant-mushrooms: true
