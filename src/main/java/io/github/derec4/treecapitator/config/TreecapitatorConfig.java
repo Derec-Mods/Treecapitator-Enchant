@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 public class TreecapitatorConfig {
-
     public static boolean enabled = true;
-    public static boolean requireEnchantment = true;
     public static boolean antiGrief = true;
     public static int maxLogsPerChop = 64;
     public static boolean matchLogs = true;
@@ -23,7 +21,6 @@ public class TreecapitatorConfig {
 
     public static void load(FileConfiguration config) {
         enabled = config.getBoolean("enabled", true);
-        requireEnchantment = config.getBoolean("require-enchantment", true);
         antiGrief = config.getBoolean("anti-grief", true);
         maxLogsPerChop = config.getInt("max-logs-per-chop", 64);
         matchLogs = config.getBoolean("match-logs", true);

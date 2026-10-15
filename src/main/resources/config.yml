@@ -1,5 +1,4 @@
 enabled: true
-require-enchantment: true
 anti-grief: true
 max-logs-per-chop: 64
 match-logs: true

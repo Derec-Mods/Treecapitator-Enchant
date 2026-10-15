@@ -1,12 +1,10 @@
 package io.github.derec4.treecapitator;
 
 import io.github.derec4.treecapitator.commands.TreecapitatorCommand;
-import io.github.derec4.treecapitator.compatibility.VeinminerCompatibility;
 import io.github.derec4.treecapitator.config.TreecapitatorConfig;
 import io.github.derec4.treecapitator.listeners.BlockBreakListener;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,7 +25,6 @@ public class TreecapitatorPlugin extends JavaPlugin {
         TreecapitatorConfig.load(getConfig());
 
         getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
-        getServer().getPluginManager().registerEvents(new VeinminerCompatibility(), this);
 
         TreecapitatorCommand command = new TreecapitatorCommand();
         PluginCommand pluginCommand = getCommand("treecapitator");
@@ -38,11 +35,11 @@ public class TreecapitatorPlugin extends JavaPlugin {
 
         ConsoleCommandSender console = Bukkit.getConsoleSender();
         String version = getDescription().getVersion();
-        console.sendMessage(Component.text(""));
-        console.sendMessage(Component.text("  |_______|                             ").color(NamedTextColor.GREEN));
-        console.sendMessage(Component.text("  | Derex |     Treecapitator v" + version).color(NamedTextColor.GREEN));
-        console.sendMessage(Component.text("  |_______|     Running on " + Bukkit.getName() + " - " + Bukkit.getVersion()).color(NamedTextColor.GREEN));
-        console.sendMessage(Component.text(""));
+        console.sendMessage("");
+        console.sendMessage(ChatColor.GREEN + "  |_______|                             ");
+        console.sendMessage(ChatColor.GREEN + "  | Derex |     Treecapitator v" + version);
+        console.sendMessage(ChatColor.GREEN + "  |_______|     Running on " + Bukkit.getName() + " - " + Bukkit.getVersion());
+        console.sendMessage("");
     }
 
     public void reloadPluginConfig() {

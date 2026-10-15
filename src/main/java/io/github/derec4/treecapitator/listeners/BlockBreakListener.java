@@ -1,6 +1,5 @@
 package io.github.derec4.treecapitator.listeners;
 
-import io.github.derec4.treecapitator.compatibility.VeinminerCompatibility;
 import io.github.derec4.treecapitator.config.TreecapitatorConfig;
 import io.github.derec4.treecapitator.engine.TreeFeller;
 import io.github.derec4.treecapitator.utils.TreeUtils;
@@ -9,10 +8,7 @@ import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.block.Block;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -70,16 +66,6 @@ public class BlockBreakListener implements Listener {
         ItemStack item = player.getInventory().getItemInMainHand();
         if (!TreeUtils.isAxe(item.getType())) {
             return;
-        }
-
-        VeinminerCompatibility.checkAndAddLogging(item);
-
-        if (TreecapitatorConfig.requireEnchantment) {
-            NamespacedKey key = new NamespacedKey("treecapitator", "logging");
-            Enchantment loggingEnchant = Registry.ENCHANTMENT.get(key);
-            if (loggingEnchant == null || !item.containsEnchantment(loggingEnchant)) {
-                return;
-            }
         }
 
         if (TreecapitatorConfig.cooldownMs > 0 && !player.hasPermission("treecapitator.bypass.cooldown")) {
