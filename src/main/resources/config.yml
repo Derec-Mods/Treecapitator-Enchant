@@ -6,6 +6,7 @@ strict-species-match: false
 include-giant-mushrooms: true
 show-animation: true
 consume-durability: true
+merge-drops: false
 cooldown-ms: 0
 world-allowlist: []
 world-denylist: []

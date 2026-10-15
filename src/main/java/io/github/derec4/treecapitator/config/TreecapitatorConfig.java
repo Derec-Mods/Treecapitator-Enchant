@@ -21,6 +21,7 @@ public class TreecapitatorConfig {
     public static boolean includeGiantMushrooms = true;
     public static boolean showAnimation = true;
     public static boolean consumeDurability = true;
+    public static boolean mergeDrops = false;
     public static long cooldownMs = 0;
     public static final Set<String> worldAllowlist = new HashSet<>();
     public static final Set<String> worldDenylist = new HashSet<>();
@@ -41,6 +42,7 @@ public class TreecapitatorConfig {
         includeGiantMushrooms = config.getBoolean("include-giant-mushrooms", true);
         showAnimation = config.getBoolean("show-animation", true);
         consumeDurability = config.getBoolean("consume-durability", true);
+        mergeDrops = config.getBoolean("merge-drops", false);
         cooldownMs = config.getLong("cooldown-ms", 0);
 
         worldAllowlist.clear();

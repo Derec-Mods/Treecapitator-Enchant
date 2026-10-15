@@ -4,7 +4,10 @@ import io.github.derec4.treecapitator.config.TreecapitatorConfig;
 import io.github.derec4.treecapitator.engine.TreeFeller;
 import io.github.derec4.treecapitator.utils.TreeUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.block.Block;
@@ -16,6 +19,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -89,6 +94,8 @@ public class BlockBreakListener implements Listener {
         }
 
         int successfulBreaks = 0;
+        List<ItemStack> mergedDrops = TreecapitatorConfig.mergeDrops ? new ArrayList<>() : null;
+
         for (Block target : logs) {
             if (target.equals(origin)) {
                 continue;
@@ -104,11 +111,29 @@ public class BlockBreakListener implements Listener {
                 Bukkit.getPluginManager().callEvent(fakeEvent);
 
                 if (!fakeEvent.isCancelled()) {
-                    target.breakNaturally(item, true, TreecapitatorConfig.showAnimation);
+                    if (TreecapitatorConfig.mergeDrops) {
+                        Collection<ItemStack> drops = target.getDrops(item, player);
+                        for (ItemStack drop : drops) {
+                            mergeDrop(mergedDrops, drop);
+                        }
+                        if (TreecapitatorConfig.showAnimation) {
+                            target.getWorld().playEffect(target.getLocation(), Effect.STEP_SOUND, target.getType());
+                        }
+                        target.setType(Material.AIR);
+                    } else {
+                        target.breakNaturally(item, true, TreecapitatorConfig.showAnimation);
+                    }
                     successfulBreaks++;
                 }
             } finally {
                 processingBlocks.remove(target);
+            }
+        }
+
+        if (TreecapitatorConfig.mergeDrops && mergedDrops != null && !mergedDrops.isEmpty()) {
+            Location dropLoc = origin.getLocation().add(0.5, 0.5, 0.5);
+            for (ItemStack drop : mergedDrops) {
+                origin.getWorld().dropItemNaturally(dropLoc, drop);
             }
         }
 
@@ -119,6 +144,28 @@ public class BlockBreakListener implements Listener {
                 }
                 player.damageItemStack(item, 1);
             }
+        }
+    }
+
+    private void mergeDrop(List<ItemStack> list, ItemStack drop) {
+        int remaining = drop.getAmount();
+        int maxStack = drop.getMaxStackSize();
+        for (ItemStack existing : list) {
+            if (existing.isSimilar(drop) && existing.getAmount() < maxStack) {
+                int canAdd = Math.min(remaining, maxStack - existing.getAmount());
+                existing.setAmount(existing.getAmount() + canAdd);
+                remaining -= canAdd;
+                if (remaining <= 0) {
+                    return;
+                }
+            }
+        }
+        while (remaining > 0) {
+            int amount = Math.min(remaining, maxStack);
+            ItemStack newStack = drop.clone();
+            newStack.setAmount(amount);
+            list.add(newStack);
+            remaining -= amount;
         }
     }
 }
