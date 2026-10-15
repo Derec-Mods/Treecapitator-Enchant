@@ -25,6 +25,7 @@ import java.util.UUID;
 
 public class BlockBreakListener implements Listener {
 
+    public static final Set<UUID> disabledPlayers = new HashSet<>();
     private final Set<Block> processingBlocks = new HashSet<>();
     private final Map<UUID, Long> cooldowns = new HashMap<>();
 
@@ -49,6 +50,10 @@ public class BlockBreakListener implements Listener {
         }
 
         if (!player.hasPermission("treecapitator.use")) {
+            return;
+        }
+
+        if (disabledPlayers.contains(player.getUniqueId())) {
             return;
         }
 
