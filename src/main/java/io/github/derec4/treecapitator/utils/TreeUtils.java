@@ -37,8 +37,8 @@ public class TreeUtils {
         return includeMushrooms && material == Material.MUSHROOM_STEM;
     }
 
-    public static boolean matchesSpecies(Material base, Material target, boolean strict) {
-        if (!strict) {
+    public static boolean matchesLog(Material base, Material target, boolean matchLogs) {
+        if (!matchLogs) {
             return true;
         }
         return base == target;

@@ -17,7 +17,7 @@ public class TreecapitatorConfig {
     public static boolean requireEnchantment = false;
     public static DetectionMode detectionMode = DetectionMode.SMART;
     public static int maxLogsPerChop = 500;
-    public static boolean strictSpeciesMatch = false;
+    public static boolean matchLogs = false;
     public static boolean includeGiantMushrooms = true;
     public static boolean showAnimation = true;
     public static boolean consumeDurability = true;
@@ -38,7 +38,7 @@ public class TreecapitatorConfig {
         }
 
         maxLogsPerChop = config.getInt("max-logs-per-chop", 500);
-        strictSpeciesMatch = config.getBoolean("strict-species-match", false);
+        matchLogs = config.getBoolean("match-logs", false);
         includeGiantMushrooms = config.getBoolean("include-giant-mushrooms", true);
         showAnimation = config.getBoolean("show-animation", true);
         consumeDurability = config.getBoolean("consume-durability", true);

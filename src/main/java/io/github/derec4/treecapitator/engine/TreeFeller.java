@@ -18,7 +18,7 @@ public class TreeFeller {
     public static List<Block> findTreeLogs(Block origin) {
         Material originMaterial = origin.getType();
         boolean includeMushrooms = TreecapitatorConfig.includeGiantMushrooms;
-        boolean strictSpecies = TreecapitatorConfig.strictSpeciesMatch;
+        boolean matchLogs = TreecapitatorConfig.matchLogs;
         boolean smart = TreecapitatorConfig.detectionMode == TreecapitatorConfig.DetectionMode.SMART;
         int maxLogs = TreecapitatorConfig.maxLogsPerChop;
 
@@ -62,7 +62,7 @@ public class TreeFeller {
                             continue;
                         }
 
-                        if (!TreeUtils.matchesSpecies(originMaterial, neighborType, strictSpecies)) {
+                        if (!TreeUtils.matchesLog(originMaterial, neighborType, matchLogs)) {
                             continue;
                         }
 
