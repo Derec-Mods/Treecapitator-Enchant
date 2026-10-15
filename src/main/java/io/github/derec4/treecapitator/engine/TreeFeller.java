@@ -76,6 +76,19 @@ public class TreeFeller {
             }
         }
 
+        if (antiGrief) {
+            boolean hasNaturalLeaves = false;
+            for (Block log : logs) {
+                if (TreeUtils.touchesMatchingLeaf(log)) {
+                    hasNaturalLeaves = true;
+                    break;
+                }
+            }
+            if (!hasNaturalLeaves) {
+                return Collections.emptyList();
+            }
+        }
+
         logs.sort((b1, b2) -> Integer.compare(b2.getY(), b1.getY()));
         return logs;
     }
