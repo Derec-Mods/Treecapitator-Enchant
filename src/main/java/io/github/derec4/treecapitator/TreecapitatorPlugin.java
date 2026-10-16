@@ -8,8 +8,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
 
 public class TreecapitatorPlugin extends JavaPlugin {
 
@@ -29,12 +30,7 @@ public class TreecapitatorPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
         getServer().getPluginManager().registerEvents(new VeinminerCompatibility(), this);
 
-        TreecapitatorCommand command = new TreecapitatorCommand();
-        PluginCommand pluginCommand = getCommand("treecapitator");
-        if (pluginCommand != null) {
-            pluginCommand.setExecutor(command);
-            pluginCommand.setTabCompleter(command);
-        }
+        registerCommand("treecapitator", "Treecapitator main command", List.of("tc"), new TreecapitatorCommand());
 
         ConsoleCommandSender console = Bukkit.getConsoleSender();
         String version = getDescription().getVersion();
