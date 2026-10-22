@@ -74,12 +74,9 @@ public class BlockBreakListener implements Listener {
 
         VeinminerCompatibility.checkAndAddLogging(item);
 
-        if (TreecapitatorConfig.requireEnchantment) {
-            NamespacedKey key = new NamespacedKey("treecapitator", "logging");
-            Enchantment loggingEnchant = Registry.ENCHANTMENT.get(key);
-            if (loggingEnchant == null || !item.containsEnchantment(loggingEnchant)) {
-                return;
-            }
+        Enchantment logging = VeinminerCompatibility.getLoggingEnchantment();
+        if (TreecapitatorConfig.requireEnchantment && (logging == null || !item.containsEnchantment(logging))) {
+            return;
         }
 
         if (TreecapitatorConfig.cooldownMs > 0 && !player.hasPermission("treecapitator.bypass.cooldown")) {

@@ -1,6 +1,8 @@
 package io.github.derec4.treecapitator.compatibility;
 
 import io.github.derec4.treecapitator.utils.TreeUtils;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
@@ -9,37 +11,48 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class VeinminerCompatibility implements Listener {
 
+    private static Enchantment cachedLoggingEnchant;
+
+    public static Enchantment getLoggingEnchantment() {
+        if (cachedLoggingEnchant == null) {
+            NamespacedKey key = new NamespacedKey("treecapitator", "logging");
+            try {
+                cachedLoggingEnchant = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(key);
+            } catch (Throwable ignored) {
+            }
+            if (cachedLoggingEnchant == null) {
+                cachedLoggingEnchant = Registry.ENCHANTMENT.get(key);
+            }
+        }
+        return cachedLoggingEnchant;
+    }
+
     public static void checkAndAddLogging(ItemStack item) {
-        if (item == null || !TreeUtils.isAxe(item.getType())) {
+        if (item == null || !TreeUtils.isAxe(item.getType()) || !item.hasItemMeta()) {
             return;
         }
 
-        NamespacedKey loggingKey = new NamespacedKey("treecapitator", "logging");
-        Enchantment loggingEnchant = Registry.ENCHANTMENT.get(loggingKey);
-        if (loggingEnchant == null) {
+        Enchantment logging = getLoggingEnchantment();
+        ItemMeta meta = item.getItemMeta();
+        if (logging == null || !meta.hasEnchants()) {
             return;
         }
 
-        List<Enchantment> toRemove = new ArrayList<>();
-        for (Enchantment enchant : item.getEnchantments().keySet()) {
-            if (enchant.getKey().toString().toLowerCase().contains("veinmin")) {
-                toRemove.add(enchant);
+        boolean modified = false;
+        for (Enchantment enchant : meta.getEnchants().keySet()) {
+            if (enchant.getKey().asString().toLowerCase().contains("veinmin")) {
+                meta.removeEnchant(enchant);
+                modified = true;
             }
         }
 
-        if (!toRemove.isEmpty()) {
-            for (Enchantment enchant : toRemove) {
-                item.removeEnchantment(enchant);
-            }
-            if (!item.containsEnchantment(loggingEnchant)) {
-                item.addUnsafeEnchantment(loggingEnchant, 1);
-            }
+        if (modified) {
+            meta.addEnchant(logging, 1, true);
+            item.setItemMeta(meta);
         }
     }
 

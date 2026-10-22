@@ -4,6 +4,7 @@ import io.github.derec4.treecapitator.commands.TreecapitatorCommand;
 import io.github.derec4.treecapitator.compatibility.VeinminerCompatibility;
 import io.github.derec4.treecapitator.config.TreecapitatorConfig;
 import io.github.derec4.treecapitator.listeners.BlockBreakListener;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -30,7 +31,9 @@ public class TreecapitatorPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
         getServer().getPluginManager().registerEvents(new VeinminerCompatibility(), this);
 
-        registerCommand("treecapitator", "Treecapitator main command", List.of("tc"), new TreecapitatorCommand());
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+            event.registrar().register("treecapitator", "Treecapitator main command", List.of("tc"), new TreecapitatorCommand());
+        });
 
         ConsoleCommandSender console = Bukkit.getConsoleSender();
         String version = getDescription().getVersion();
