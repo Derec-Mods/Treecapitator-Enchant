@@ -21,6 +21,7 @@ public class TreeFeller {
         boolean matchLogs = TreecapitatorConfig.matchLogs;
         boolean antiGrief = TreecapitatorConfig.antiGrief;
         int maxLogs = TreecapitatorConfig.maxLogsPerChop;
+        int maxSearch = Math.max(maxLogs * 4, 256);
 
         if (!TreeUtils.isLog(originMaterial, includeMushrooms)) {
             return Collections.emptyList();
@@ -37,12 +38,14 @@ public class TreeFeller {
         visited.add(origin);
         queue.add(origin);
 
+        boolean hasNaturalLeaves = !antiGrief || TreeUtils.touchesMatchingLeaf(origin);
+
         while (!queue.isEmpty()) {
             Block current = queue.poll();
             logs.add(current);
 
-            if (logs.size() > maxLogs) {
-                return Collections.emptyList();
+            if (logs.size() >= maxSearch) {
+                break;
             }
 
             for (int dx = -1; dx <= 1; dx++) {
@@ -70,26 +73,24 @@ public class TreeFeller {
                             continue;
                         }
 
+                        if (antiGrief && !hasNaturalLeaves && TreeUtils.touchesMatchingLeaf(neighbor)) {
+                            hasNaturalLeaves = true;
+                        }
+
                         queue.add(neighbor);
                     }
                 }
             }
         }
 
-        if (antiGrief) {
-            boolean hasNaturalLeaves = false;
-            for (Block log : logs) {
-                if (TreeUtils.touchesMatchingLeaf(log)) {
-                    hasNaturalLeaves = true;
-                    break;
-                }
-            }
-            if (!hasNaturalLeaves) {
-                return Collections.emptyList();
-            }
+        if (antiGrief && !hasNaturalLeaves) {
+            return Collections.emptyList();
         }
 
         logs.sort((b1, b2) -> Integer.compare(b2.getY(), b1.getY()));
+        if (logs.size() > maxLogs) {
+            return new ArrayList<>(logs.subList(0, maxLogs));
+        }
         return logs;
     }
 }
