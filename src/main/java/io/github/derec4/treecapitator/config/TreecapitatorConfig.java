@@ -11,6 +11,7 @@ public class TreecapitatorConfig {
     public static boolean enabled = true;
     public static boolean requireEnchantment = true;
     public static boolean antiGrief = true;
+    public static boolean fellEntireTree = true;
     public static int maxLogsPerChop = 64;
     public static boolean matchLogs = true;
     public static boolean includeGiantMushrooms = true;
@@ -25,6 +26,7 @@ public class TreecapitatorConfig {
         enabled = config.getBoolean("enabled", true);
         requireEnchantment = config.getBoolean("require-enchantment", true);
         antiGrief = config.getBoolean("anti-grief", true);
+        fellEntireTree = config.getBoolean("fell-entire-tree", true);
         maxLogsPerChop = config.getInt("max-logs-per-chop", 64);
         matchLogs = config.getBoolean("match-logs", true);
         includeGiantMushrooms = config.getBoolean("include-giant-mushrooms", true);

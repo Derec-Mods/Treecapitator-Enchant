@@ -23,18 +23,15 @@ public class TreeFeller {
     public static List<Block> findTreeLogs(Block origin) {
         Material originMaterial = origin.getType();
         boolean includeMushrooms = TreecapitatorConfig.includeGiantMushrooms;
-        boolean matchLogs = TreecapitatorConfig.matchLogs;
         boolean antiGrief = TreecapitatorConfig.antiGrief;
+
+        if (!TreeUtils.isLog(originMaterial, includeMushrooms) || (antiGrief && !TreeUtils.isAntiGriefValid(origin, includeMushrooms))) {
+            return Collections.emptyList();
+        }
+
+        boolean fellEntireTree = TreecapitatorConfig.fellEntireTree;
         int maxLogs = TreecapitatorConfig.maxLogsPerChop;
-        int maxSearch = Math.max(maxLogs * 4, 256);
-
-        if (!TreeUtils.isLog(originMaterial, includeMushrooms)) {
-            return Collections.emptyList();
-        }
-
-        if (antiGrief && !TreeUtils.isAntiGriefValid(origin, includeMushrooms)) {
-            return Collections.emptyList();
-        }
+        int maxSearch = fellEntireTree ? 512 : Math.max(maxLogs * 4, 256);
 
         long now = System.currentTimeMillis();
         naturalStumps.entrySet().removeIf(entry -> now - entry.getValue() > 300000L);
@@ -46,6 +43,7 @@ public class TreeFeller {
         visited.add(origin);
         queue.add(origin);
 
+        boolean matchLogs = TreecapitatorConfig.matchLogs;
         boolean hasNaturalLeaves = !antiGrief || TreeUtils.touchesMatchingLeaf(origin) || naturalStumps.containsKey(origin);
 
         while (!queue.isEmpty()) {
@@ -69,11 +67,7 @@ public class TreeFeller {
                         }
 
                         Material neighborType = neighbor.getType();
-                        if (!TreeUtils.isLog(neighborType, includeMushrooms)) {
-                            continue;
-                        }
-
-                        if (!TreeUtils.matchesLog(originMaterial, neighborType, matchLogs)) {
+                        if (!TreeUtils.isLog(neighborType, includeMushrooms) || !TreeUtils.matchesLog(originMaterial, neighborType, matchLogs)) {
                             continue;
                         }
 
@@ -96,20 +90,16 @@ public class TreeFeller {
         }
 
         logs.sort(Comparator.comparingDouble(b -> b.getLocation().distanceSquared(origin.getLocation())));
-        if (logs.size() > maxLogs) {
+        if (!fellEntireTree && maxLogs > 0 && logs.size() > maxLogs) {
             for (int i = maxLogs; i < logs.size(); i++) {
                 naturalStumps.put(logs.get(i), now);
             }
             List<Block> toFell = new ArrayList<>(logs.subList(0, maxLogs));
-            for (Block block : toFell) {
-                naturalStumps.remove(block);
-            }
+            toFell.forEach(naturalStumps::remove);
             return toFell;
         }
 
-        for (Block block : logs) {
-            naturalStumps.remove(block);
-        }
+        logs.forEach(naturalStumps::remove);
         return logs;
     }
 }

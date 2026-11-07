@@ -22,7 +22,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,15 +38,7 @@ public class BlockBreakListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Block origin = event.getBlock();
-        if (processingBlocks.contains(origin)) {
-            return;
-        }
-
-        if (!TreecapitatorConfig.enabled) {
-            return;
-        }
-
-        if (!TreecapitatorConfig.isWorldAllowed(origin.getWorld().getName())) {
+        if (processingBlocks.contains(origin) || !TreecapitatorConfig.enabled || !TreecapitatorConfig.isWorldAllowed(origin.getWorld().getName())) {
             return;
         }
 
@@ -56,15 +47,7 @@ public class BlockBreakListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE) {
-            return;
-        }
-
-        if (!player.hasPermission("treecapitator.use")) {
-            return;
-        }
-
-        if (disabledPlayers.contains(player.getUniqueId())) {
+        if ((player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE) || !player.hasPermission("treecapitator.use") || disabledPlayers.contains(player.getUniqueId())) {
             return;
         }
 
@@ -114,10 +97,7 @@ public class BlockBreakListener implements Listener {
                 if (!fakeEvent.isCancelled()) {
                     BlockData blockData = target.getBlockData();
                     if (TreecapitatorConfig.mergeDrops) {
-                        Collection<ItemStack> drops = target.getDrops(item, player);
-                        for (ItemStack drop : drops) {
-                            mergeDrop(mergedDrops, drop);
-                        }
+                        target.getDrops(item, player).forEach(d -> mergeDrop(mergedDrops, d));
                         target.setType(Material.AIR);
                     } else {
                         target.breakNaturally(item, false, true);

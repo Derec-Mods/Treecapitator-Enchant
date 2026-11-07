@@ -1,6 +1,7 @@
 enabled: true
 require-enchantment: true
 anti-grief: true
+fell-entire-tree: true
 max-logs-per-chop: 64
 match-logs: true
 include-giant-mushrooms: true
