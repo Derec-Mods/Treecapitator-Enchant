@@ -5,13 +5,14 @@ import io.github.derec4.treecapitator.config.TreecapitatorConfig;
 import io.github.derec4.treecapitator.engine.TreeFeller;
 import io.github.derec4.treecapitator.utils.TreeUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
+import org.bukkit.Particle;
+import org.bukkit.SoundCategory;
+import org.bukkit.SoundGroup;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -111,17 +112,21 @@ public class BlockBreakListener implements Listener {
                 Bukkit.getPluginManager().callEvent(fakeEvent);
 
                 if (!fakeEvent.isCancelled()) {
+                    BlockData blockData = target.getBlockData();
                     if (TreecapitatorConfig.mergeDrops) {
                         Collection<ItemStack> drops = target.getDrops(item, player);
                         for (ItemStack drop : drops) {
                             mergeDrop(mergedDrops, drop);
                         }
-                        if (TreecapitatorConfig.showAnimation) {
-                            target.getWorld().playEffect(target.getLocation(), Effect.STEP_SOUND, target.getType());
-                        }
                         target.setType(Material.AIR);
                     } else {
-                        target.breakNaturally(item, true, TreecapitatorConfig.showAnimation);
+                        target.breakNaturally(item, false, true);
+                    }
+                    if (TreecapitatorConfig.showAnimation) {
+                        SoundGroup soundGroup = blockData.getSoundGroup();
+                        Location center = target.getLocation().add(0.5, 0.5, 0.5);
+                        target.getWorld().spawnParticle(Particle.BLOCK, center, 16, 0.25, 0.25, 0.25, blockData);
+                        target.getWorld().playSound(center, soundGroup.getBreakSound(), SoundCategory.BLOCKS, (soundGroup.getVolume() + 1.0f) / 2.0f, soundGroup.getPitch() * 0.8f);
                     }
                     successfulBreaks++;
                 }
