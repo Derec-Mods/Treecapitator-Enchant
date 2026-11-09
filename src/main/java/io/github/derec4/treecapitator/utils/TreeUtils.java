@@ -73,15 +73,11 @@ public class TreeUtils {
         String logName = log.name().replace("STRIPPED_", "").replace("_LOG", "").replace("_WOOD", "");
         String leafName = leafType.name().replace("_LEAVES", "");
 
-        if (logName.equals(leafName)) {
-            return true;
+        if (logName.equals("OAK")) {
+            return leafName.equals("OAK") || leafName.contains("AZALEA");
         }
 
-        if (logName.equals("OAK") && (leafType == Material.AZALEA_LEAVES || leafType == Material.FLOWERING_AZALEA_LEAVES)) {
-            return true;
-        }
-
-        return false;
+        return leafName.contains(logName);
     }
 
     public static boolean touchesMatchingLeaf(Block logBlock) {
