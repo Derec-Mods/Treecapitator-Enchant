@@ -1,5 +1,6 @@
 package io.github.derec4.treecapitator.listeners;
 
+import io.github.derec4.treecapitator.TreecapitatorPlugin;
 import io.github.derec4.treecapitator.compatibility.VeinminerCompatibility;
 import io.github.derec4.treecapitator.config.TreecapitatorConfig;
 import io.github.derec4.treecapitator.engine.TreeFeller;
@@ -20,12 +21,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 
@@ -77,58 +81,79 @@ public class BlockBreakListener implements Listener {
             return;
         }
 
-        int successfulBreaks = 0;
         List<ItemStack> mergedDrops = TreecapitatorConfig.mergeDrops ? new ArrayList<>() : null;
 
-        for (Block target : logs) {
-            if (target.equals(origin)) {
-                continue;
-            }
-
-            if (target.getType().isAir() || target.isLiquid() || target.getType().getHardness() < 0) {
-                continue;
-            }
-
-            processingBlocks.add(target);
-            try {
-                BlockBreakEvent fakeEvent = new BlockBreakEvent(target, player);
-                Bukkit.getPluginManager().callEvent(fakeEvent);
-
-                if (!fakeEvent.isCancelled()) {
-                    BlockData blockData = target.getBlockData();
-                    if (TreecapitatorConfig.mergeDrops) {
-                        target.getDrops(item, player).forEach(d -> mergeDrop(mergedDrops, d));
-                        target.setType(Material.AIR);
-                    } else {
-                        target.breakNaturally(item, false, true);
-                    }
-                    if (TreecapitatorConfig.showAnimation) {
-                        SoundGroup soundGroup = blockData.getSoundGroup();
-                        Location center = target.getLocation().add(0.5, 0.5, 0.5);
-                        target.getWorld().spawnParticle(Particle.BLOCK, center, 16, 0.25, 0.25, 0.25, blockData);
-                        target.getWorld().playSound(center, soundGroup.getBreakSound(), SoundCategory.BLOCKS, (soundGroup.getVolume() + 1.0f) / 2.0f, soundGroup.getPitch() * 0.8f);
-                    }
-                    successfulBreaks++;
+        if (!TreecapitatorConfig.showAnimation) {
+            for (Block target : logs) {
+                if (!target.equals(origin)) {
+                    breakBlock(target, player, item, mergedDrops);
                 }
-            } finally {
-                processingBlocks.remove(target);
             }
+            dropMerged(origin, mergedDrops);
+            return;
         }
 
-        if (TreecapitatorConfig.mergeDrops && mergedDrops != null && !mergedDrops.isEmpty()) {
+        Queue<Block> queue = new ArrayDeque<>(logs);
+        queue.remove(origin);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!player.isOnline() || item.getType().isAir() || queue.isEmpty()) {
+                    dropMerged(origin, mergedDrops);
+                    cancel();
+                    return;
+                }
+                for (int i = 0; i < 2 && !queue.isEmpty(); i++) {
+                    breakBlock(queue.poll(), player, item, mergedDrops);
+                }
+            }
+        }.runTaskTimer(TreecapitatorPlugin.getInstance(), 1L, 1L);
+    }
+
+    private void breakBlock(Block target, Player player, ItemStack item, List<ItemStack> mergedDrops) {
+        if (target == null || target.getType().isAir() || target.isLiquid() || target.getType().getHardness() < 0) {
+            return;
+        }
+
+        processingBlocks.add(target);
+        try {
+            BlockBreakEvent fakeEvent = new BlockBreakEvent(target, player);
+            Bukkit.getPluginManager().callEvent(fakeEvent);
+            if (fakeEvent.isCancelled()) {
+                return;
+            }
+
+            BlockData blockData = target.getBlockData();
+            if (TreecapitatorConfig.mergeDrops) {
+                target.getDrops(item, player).forEach(d -> mergeDrop(mergedDrops, d));
+                target.setType(Material.AIR);
+            } else {
+                target.breakNaturally(item, false, true);
+            }
+
+            if (TreecapitatorConfig.showAnimation) {
+                SoundGroup soundGroup = blockData.getSoundGroup();
+                Location center = target.getLocation().add(0.5, 0.5, 0.5);
+                target.getWorld().spawnParticle(Particle.BLOCK, center, 20, 0.25, 0.25, 0.25, blockData);
+                target.getWorld().playSound(center, soundGroup.getBreakSound(), SoundCategory.BLOCKS, (soundGroup.getVolume() + 1.0f) / 2.0f, soundGroup.getPitch() * 0.8f);
+            }
+
+            if (TreecapitatorConfig.consumeDurability && !item.getType().isAir()) {
+                player.damageItemStack(item, 1);
+            }
+        } finally {
+            processingBlocks.remove(target);
+        }
+    }
+
+    private void dropMerged(Block origin, List<ItemStack> mergedDrops) {
+        if (mergedDrops != null && !mergedDrops.isEmpty()) {
             Location dropLoc = origin.getLocation().add(0.5, 0.5, 0.5);
             for (ItemStack drop : mergedDrops) {
                 origin.getWorld().dropItemNaturally(dropLoc, drop);
             }
-        }
-
-        if (TreecapitatorConfig.consumeDurability && successfulBreaks > 0) {
-            for (int i = 0; i < successfulBreaks; i++) {
-                if (item.getType().isAir()) {
-                    break;
-                }
-                player.damageItemStack(item, 1);
-            }
+            mergedDrops.clear();
         }
     }
 
