@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.SoundCategory;
 import org.bukkit.SoundGroup;
+import org.bukkit.Statistic;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
@@ -124,12 +125,22 @@ public class BlockBreakListener implements Listener {
                 return;
             }
 
+            Material targetType = target.getType();
             BlockData blockData = target.getBlockData();
+            boolean broken = false;
             if (TreecapitatorConfig.mergeDrops) {
                 target.getDrops(item, player).forEach(d -> mergeDrop(mergedDrops, d));
                 target.setType(Material.AIR);
+                broken = true;
             } else {
-                target.breakNaturally(item, false, true);
+                broken = target.breakNaturally(item, false, true);
+            }
+
+            if (broken) {
+                player.incrementStatistic(Statistic.MINE_BLOCK, targetType);
+                if (item != null && !item.getType().isAir()) {
+                    player.incrementStatistic(Statistic.USE_ITEM, item.getType());
+                }
             }
 
             if (TreecapitatorConfig.showAnimation) {
